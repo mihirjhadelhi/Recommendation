@@ -1,0 +1,362 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+    padding: 30px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+.form-container {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95em;
+}
+
+input[type="number"],
+input[type="text"],
+select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.results {
+    margin-top: 30px;
+}
+
+.results h2 {
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.recommendation-card {
+    background: white;
+    border-radius: 15px;
+    padding: 0;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+}
+
+.recommendation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.property-image-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.property-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.recommendation-card:hover .property-image {
+    transform: scale(1.05);
+}
+
+.match-score-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1em;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.recommendation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 20px;
+    padding: 20px 30px 15px 30px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.recommendation-title {
+    flex: 1;
+}
+
+.recommendation-title h3 {
+    color: #333;
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+
+.recommendation-card .price {
+    padding: 0 30px;
+}
+
+.recommendation-card .property-details {
+    padding: 0 30px;
+}
+
+.recommendation-card .amenities-section {
+    margin: 15px 30px;
+}
+
+.recommendation-card .reasoning {
+    margin: 15px 30px 30px 30px;
+}
+
+.recommendation-title .address {
+    color: #666;
+    font-size: 1em;
+}
+
+.match-score {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1.1em;
+    white-space: nowrap;
+}
+
+/* Hide the old match-score if it exists in header */
+.recommendation-header .match-score {
+    display: none;
+}
+
+.property-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-item .icon {
+    font-size: 1.2em;
+}
+
+.detail-item .label {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.detail-item .value {
+    color: #333;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.price {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #667eea;
+    margin: 15px 0;
+}
+
+.amenities-section {
+    background: #e8f5e9;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 15px 0;
+    color: #2e7d32;
+    font-size: 0.95em;
+}
+
+.reasoning {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    margin-top: 15px;
+}
+
+.reasoning h4 {
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 1em;
+}
+
+.reasoning p {
+    color: #555;
+    line-height: 1.6;
+    font-size: 0.95em;
+}
+
+.error {
+    background: #fee;
+    color: #c33;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #c33;
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .recommendation-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px 10px 20px;
+    }
+    
+    .property-details {
+        grid-template-columns: 1fr;
+    }
+    
+    header h1 {
+        font-size: 2em;
+    }
+    
+    .property-image-container {
+        height: 250px;
+    }
+    
+    .match-score-badge {
+        top: 10px;
+        right: 10px;
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+    
+    .recommendation-card .price,
+    .recommendation-card .property-details,
+    .recommendation-card .amenities-section,
+    .recommendation-card .reasoning {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    .recommendation-card .reasoning {
+        margin-bottom: 20px;
+    }
+}
+
