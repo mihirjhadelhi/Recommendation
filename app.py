@@ -4,6 +4,10 @@ import pickle
 import os
 import numpy as np
 from datetime import datetime
+import sys
+
+# Import the model wrapper class
+from model_wrapper import ComplexTrapModelRenamed
 
 # Try importing joblib for scikit-learn models
 try:
@@ -38,51 +42,22 @@ def load_model():
     
     # Method 2: Try pickle with custom class handling
     def load_with_pickle():
-        # Create a stub class that matches the expected interface
+        # Use the ComplexTrapModelRenamed class from model_wrapper module
         # This allows pickle to deserialize the model even if the original class isn't available
-        import sys
         
-        # Create a generic model wrapper class that can handle the pickled model
-        class ComplexTrapModelRenamed:
-            def __init__(self, *args, **kwargs):
-                # Store any initialization data
-                if args:
-                    self._args = args
-                if kwargs:
-                    self._kwargs = kwargs
-                # Try to extract underlying model if it exists
-                for attr in ['model', '_model', 'estimator', '_estimator', 'base_estimator']:
-                    if hasattr(self, attr):
-                        underlying = getattr(self, attr)
-                        if hasattr(underlying, 'predict'):
-                            self._underlying_model = underlying
-                            break
-            
-            def predict(self, X):
-                # Try to use underlying model if available
-                if hasattr(self, '_underlying_model'):
-                    return self._underlying_model.predict(X)
-                # Try to find any attribute with a predict method
-                for attr_name in dir(self):
-                    if attr_name.startswith('_'):
-                        continue
-                    attr = getattr(self, attr_name)
-                    if hasattr(attr, 'predict'):
-                        return attr.predict(X)
-                raise NotImplementedError("Model prediction not available - underlying model not found")
-            
-            def __getstate__(self):
-                return self.__dict__
-            
-            def __setstate__(self, state):
-                self.__dict__.update(state)
-                # After unpickling, try to find the actual model
-                for key, value in state.items():
-                    if hasattr(value, 'predict') and not key.startswith('__'):
-                        self._underlying_model = value
-                        break
+        # Register the class in sys.modules so pickle can find it
+        # Pickle looks for classes by their module path, so we need to make sure
+        # the class is available at the module level where pickle expects it
         
-        # Add the class to the current module so pickle can find it
+        # If the model was pickled with the class in __main__, we need to register it there
+        # Otherwise, pickle will look for it in model_wrapper module
+        if '__main__' in sys.modules:
+            main_module = sys.modules['__main__']
+            if not hasattr(main_module, 'ComplexTrapModelRenamed'):
+                # Register the class in __main__ so pickle can find it
+                setattr(main_module, 'ComplexTrapModelRenamed', ComplexTrapModelRenamed)
+        
+        # Also make sure it's available in the current module (app)
         current_module = sys.modules[__name__]
         if not hasattr(current_module, 'ComplexTrapModelRenamed'):
             setattr(current_module, 'ComplexTrapModelRenamed', ComplexTrapModelRenamed)

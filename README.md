@@ -178,8 +178,10 @@ Get all available properties (for testing).
 
 The model is loaded automatically when the Flask app starts. The system tries multiple loading methods:
 1. **joblib** (preferred for scikit-learn models)
-2. **pickle with class workaround** (handles custom classes)
+2. **pickle with class workaround** (handles custom classes using `ComplexTrapModelRenamed` from `model_wrapper.py`)
 3. **standard pickle**
+
+The `ComplexTrapModelRenamed` class is defined in `model_wrapper.py` and acts as a wrapper for pickled models that use custom class definitions. This allows the model to be loaded even when the original class definition is not available.
 
 ### Model Prediction
 
@@ -205,6 +207,7 @@ If your model uses different features, modify the `predict_price()` function in 
 ```
 .
 ├── app.py                 # Flask backend API
+├── model_wrapper.py       # Model wrapper class for custom model loading
 ├── static/
 │   ├── index.html        # Frontend HTML
 │   ├── style.css         # Styling
