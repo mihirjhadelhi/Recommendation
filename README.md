@@ -33,12 +33,16 @@ pip install -r requirements.txt
 **Note for Python 3.13 users**: If you encounter `BackendUnavailable: Cannot import 'setuptools.build_meta'` errors, make sure to run step 1 first. Python 3.13 virtual environments don't include setuptools by default.
 
 3. Place your ML model file:
-   - **Location**: Place `complex_price_model_v2.pkl` in the **root directory** (same folder as `app.py`)
+   - **Location**: Place `complex_price_model_v2.pkl` in the **root directory** (same folder as `run.py` or `app.py`)
    - **File structure should be:**
      ```
      NewChatbot/
+     ├── run.py
      ├── app.py
+     ├── config.py
      ├── complex_price_model_v2.pkl    ← Place model here
+     ├── app/
+     │   └── ...
      ├── requirements.txt
      └── static/
          └── ...
@@ -47,10 +51,14 @@ pip install -r requirements.txt
 
 4. Run the backend server:
 ```bash
+# Option 1: Using the main entry point (recommended)
+python run.py
+
+# Option 2: Using app.py (backward compatibility)
 python app.py
 ```
 
-The server will start on `http://localhost:5000`
+The server will start on `http://localhost:5001`
 
 5. Open the frontend:
    - Open `static/index.html` in your web browser
@@ -181,15 +189,15 @@ The model is loaded automatically when the Flask app starts. The system tries mu
 2. **pickle with class workaround** (handles custom classes using `ComplexTrapModelRenamed` from `model_wrapper.py`)
 3. **standard pickle**
 
-The `ComplexTrapModelRenamed` class is defined in `model_wrapper.py` and acts as a wrapper for pickled models that use custom class definitions. This allows the model to be loaded even when the original class definition is not available.
+The `ComplexTrapModelRenamed` class is defined in `app/models/model_wrapper.py` and acts as a wrapper for pickled models that use custom class definitions. This allows the model to be loaded even when the original class definition is not available.
 
 ### Model Prediction
 
-The model is called in the `predict_price()` function (located at `app.py` line 150). 
+The model is called in the `PricePredictor.predict()` method (located in `app/models/predictor.py`). 
 
-**Model Call Location:** `app.py` line 169
+**Model Call Location:** `app/models/predictor.py`
 ```python
-prediction = model.predict(features_array)[0]
+prediction = self.model.predict(features_array)[0]
 ```
 
 **Expected Features (in order):**
@@ -200,15 +208,33 @@ prediction = model.predict(features_array)[0]
 - Zip code
 - Lot size
 
-If your model uses different features, modify the `predict_price()` function in `app.py` (lines 156-163).
+If your model uses different features, modify the `PricePredictor.predict()` method in `app/models/predictor.py`.
 
 ## Project Structure
 
 ```
 .
-├── app.py                 # Flask backend API
-├── model_wrapper.py       # Model wrapper class for custom model loading
-├── static/
+├── app.py                 # Main entry point (backward compatibility)
+├── run.py                 # Alternative entry point (recommended)
+├── config.py              # Configuration settings
+├── app/                   # Application package
+│   ├── __init__.py       # Package initialization and Flask app factory
+│   ├── models/           # ML model related code
+│   │   ├── __init__.py
+│   │   ├── loader.py     # Model loading functionality
+│   │   ├── predictor.py  # Price prediction logic
+│   │   └── model_wrapper.py  # Model wrapper for custom classes
+│   ├── services/         # Business logic services
+│   │   ├── __init__.py
+│   │   ├── property_service.py      # Property data generation
+│   │   ├── scoring_service.py       # Match scoring logic
+│   │   └── recommendation_service.py # Recommendation generation
+│   ├── routes/           # API routes
+│   │   ├── __init__.py
+│   │   └── api.py        # API endpoints
+│   └── utils/            # Utility functions
+│       └── __init__.py
+├── static/               # Frontend files
 │   ├── index.html        # Frontend HTML
 │   ├── style.css         # Styling
 │   └── app.js            # Frontend JavaScript
@@ -273,10 +299,30 @@ If you see an error like `Can't get attribute 'ComplexTrapModelRenamed'`:
 6. **Amenities Score:**
    - Calculated as (pool + garage + garden) / 3 × 100
 
+## Code Organization
+
+The codebase follows best practices with a clean, modular structure:
+
+- **Separation of Concerns**: Business logic, API routes, and model handling are separated into different modules
+- **Configuration Management**: All configuration is centralized in `config.py`
+- **Service Layer**: Business logic is organized into service classes for better testability and maintainability
+- **Package Structure**: Code is organized into logical packages (`models/`, `services/`, `routes/`)
+- **Type Hints**: Functions include type hints for better code documentation
+- **Error Handling**: Proper error handling throughout the application
+
+### Key Components:
+
+- **`config.py`**: Centralized configuration with constants and settings
+- **`app/models/`**: ML model loading and prediction logic
+- **`app/services/`**: Business logic (property generation, scoring, recommendations)
+- **`app/routes/`**: API endpoint definitions
+- **`app/__init__.py`**: Flask application factory pattern
+
 ## Notes
 
 - The system uses mock property data for demonstration. In production, you would connect to a real property database.
 - If the ML model file is not present or cannot be loaded, the system uses a fallback prediction method.
-- The recommendation algorithm can be customized by modifying the `calculate_match_score()` function in `app.py`.
+- The recommendation algorithm can be customized by modifying the `ScoringService.calculate_match_score()` method in `app/services/scoring_service.py`.
 - Property images are sourced from Unsplash and include automatic fallback handling for broken images.
+- The codebase follows Python best practices with proper package structure and separation of concerns.
 
